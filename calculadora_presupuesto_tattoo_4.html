@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Presupuesto · Tatuaje</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f5f4f0; color: #1a1a1a; min-height: 100vh; padding: 2rem 1rem; }
+    .container { max-width: 620px; margin: 0 auto; }
+    h1 { font-size: 22px; font-weight: 500; margin-bottom: 0.25rem; }
+    .subtitle { font-size: 13px; color: #777; margin-bottom: 1.5rem; }
+    .slabel { font-size: 11px; color: #888; letter-spacing: 0.07em; text-transform: uppercase; margin: 0 0 10px; }
+    .card { background: #fff; border: 0.5px solid #e0ddd6; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+    .g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .obtn {
+      padding: 12px 6px;
+      border: 0.5px solid #ccc;
+      border-radius: 8px;
+      background: #fff;
+      color: #1a1a1a;
+      font-size: 13px;
+      font-family: inherit;
+      text-align: center;
+      line-height: 1.4;
+      cursor: pointer;
+      display: block;
+      width: 100%;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-appearance: none;
+      appearance: none;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .obtn small { display: block; font-size: 10.5px; opacity: 0.65; font-weight: 400; }
+    .obtn.sel { border: 2px solid #1D9E75; background: #E1F5EE; color: #0F6E56; font-weight: 500; }
+    .obtn.sel small { opacity: 0.8; }
+    .slider-row { display: flex; align-items: center; gap: 10px; }
+    .slider-row input[type=range] { flex: 1; accent-color: #1D9E75; height: 36px; touch-action: manipulation; }
+    .res-card { border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; }
+    .res-pieza { background: #E1F5EE; border: 0.5px solid #9FE1CB; }
+    .res-sesiones { background: #E6F1FB; border: 0.5px solid #B5D4F4; }
+    .res-tag { font-size: 10px; font-weight: 500; letter-spacing: 0.07em; text-transform: uppercase; margin: 0 0 6px; }
+    .res-tag.t { color: #0F6E56; }
+    .res-tag.s { color: #185FA5; }
+    .res-precio { font-size: 34px; font-weight: 500; color: #1a1a1a; line-height: 1; }
+    .res-sub { font-size: 13px; color: #555; margin-top: 6px; }
+    .res-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+    .pill { font-size: 11px; padding: 3px 9px; border-radius: 20px; background: #fff; border: 0.5px solid #ccc; color: #666; }
+    .info-box { background: #fff; border-radius: 8px; padding: 10px 12px; font-size: 12px; color: #555; margin-top: 10px; line-height: 1.5; border: 0.5px solid #e0ddd6; }
+    .aviso { font-size: 11px; color: #888; font-style: italic; margin-top: 10px; }
+    .notas-area { width: 100%; min-height: 65px; font-size: 16px; font-family: inherit; padding: 10px; border: 0.5px solid #ccc; border-radius: 8px; background: #fff; color: #1a1a1a; resize: vertical; }
+    .notas-area:focus { outline: none; border-color: #1D9E75; }
+    .bottom-row { display: flex; justify-content: space-between; align-items: center; padding-top: 4px; }
+    .action-btn {
+      font-size: 13px;
+      font-family: inherit;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      -webkit-appearance: none;
+      appearance: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .reset-btn { background: none; border: none; color: #888; text-decoration: underline; font-size: 12px; padding: 10px 4px; }
+    .copy-btn { border: 2px solid #1D9E75; background: #E1F5EE; color: #0F6E56; font-weight: 500; }
+    .ok { font-size: 12px; color: #1D9E75; text-align: right; margin-top: 6px; display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Calculadora de presupuesto</h1>
+    <p class="subtitle">Precio orientativo · Se confirma tras ver el diseño</p>
+
+    <div class="card">
+      <p class="slabel">Estilo</p>
+      <div class="g3">
+        <button class="obtn" data-tipo="estilo" data-val="dotwork">Dotwork<small>Puntillismo</small></button>
+        <button class="obtn" data-tipo="estilo" data-val="realismo">Realismo<small>Black & Grey</small></button>
+        <button class="obtn" data-tipo="estilo" data-val="fineline">Fine Line<small>Línea fina</small></button>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="slabel">Zona del cuerpo</p>
+      <div class="g3">
+        <button class="obtn" data-tipo="zona" data-val="dedo">Dedo / Muñeca</button>
+        <button class="obtn" data-tipo="zona" data-val="antebrazo">Antebrazo</button>
+        <button class="obtn" data-tipo="zona" data-val="brazo">Brazo / Pierna</button>
+        <button class="obtn" data-tipo="zona" data-val="costilla">Costilla / Pie</button>
+        <button class="obtn" data-tipo="zona" data-val="espalda">Espalda / Pecho</button>
+        <button class="obtn" data-tipo="zona" data-val="cuello">Cuello / Cara</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="slabel">Tamaño</p>
+      <div class="slider-row">
+        <span style="font-size:12px;color:#888">Mini</span>
+        <input type="range" min="1" max="6" value="2" step="1" id="tslider">
+        <span style="font-size:12px;color:#888">Bodysuit</span>
+      </div>
+      <div style="text-align:center;margin-top:8px;">
+        <span id="tlabel" style="font-size:13px;font-weight:500;">Pequeño · 5–8 cm</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="slabel">Complejidad del diseño</p>
+      <div class="g4">
+        <button class="obtn" data-tipo="complejidad" data-val="simple">Simple</button>
+        <button class="obtn" data-tipo="complejidad" data-val="media">Media</button>
+        <button class="obtn" data-tipo="complejidad" data-val="alta">Alta</button>
+        <button class="obtn" data-tipo="complejidad" data-val="extrema">Muy detallado</button>
+      </div>
+    </div>
+
+    <div id="res-wrap" style="display:none;">
+      <div id="res-pieza" class="res-card res-pieza" style="display:none;">
+        <p class="res-tag t">Precio por pieza cerrada</p>
+        <div class="res-precio" id="precio-out">—</div>
+        <div class="res-sub" id="precio-sub"></div>
+        <div class="res-pills" id="pills-pieza"></div>
+        <p class="aviso">* Precio orientativo. Se confirma tras ver el diseño.</p>
+      </div>
+      <div id="res-sesiones" class="res-card res-sesiones" style="display:none;">
+        <p class="res-tag s">Recomendación por sesiones</p>
+        <div class="res-precio" id="sesiones-out">—</div>
+        <div class="res-sub" id="sesiones-sub"></div>
+        <div class="info-box" id="sesiones-info"></div>
+        <div class="res-pills" id="pills-sesiones"></div>
+        <p class="aviso">* El número exacto de sesiones se define tras ver el diseño.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="slabel">Notas del cliente</p>
+      <textarea class="notas-area" id="notas" placeholder="Ideas, referencias, detalles a tener en cuenta..."></textarea>
+    </div>
+
+    <div class="bottom-row">
+      <button class="action-btn reset-btn" id="btn-reset">Reiniciar</button>
+      <button class="action-btn copy-btn" id="btn-copiar">Copiar resumen</button>
+    </div>
+    <div class="ok" id="ok-msg">Copiado al portapapeles</div>
+  </div>
+
+  <script>
+    var ST = { estilo: null, zona: null, tamano: 2, complejidad: null };
+
+    var TAMANOS = {
+      1: { label: 'Mini · hasta 4 cm',        base: 60,  sesiones: 0 },
+      2: { label: 'Pequeño · 5–8 cm',         base: 100, sesiones: 0 },
+      3: { label: 'Mediano · 9–14 cm',        base: 180, sesiones: 0 },
+      4: { label: 'Grande · 15–22 cm',        base: 270, sesiones: 0 },
+      5: { label: 'Muy grande · folio o más', base: 0,   sesiones: 2 },
+      6: { label: 'Bodysuit / manga',          base: 0,   sesiones: 5 }
+    };
+
+    var ESTILO_M = { dotwork: 1.1, realismo: 1.2, fineline: 1.0 };
+    var ZONA_M   = { dedo: 0.9, antebrazo: 1.0, brazo: 1.05, costilla: 1.15, espalda: 1.1, cuello: 1.25 };
+    var COMP_M   = { simple: 0.85, media: 1.0, alta: 1.2, extrema: 1.45 };
+    var ZONA_N   = { dedo:'Dedo/Muñeca', antebrazo:'Antebrazo', brazo:'Brazo/Pierna', costilla:'Costilla/Pie', espalda:'Espalda/Pecho', cuello:'Cuello/Cara' };
+    var EST_N    = { dotwork:'Dotwork', realismo:'Realismo B&G', fineline:'Fine Line' };
+    var COMP_N   = { simple:'Simple', media:'Media', alta:'Alta', extrema:'Muy detallado' };
+
+    function handleBtn(e) {
+      e.preventDefault();
+      var btn = e.currentTarget;
+      var tipo = btn.getAttribute('data-tipo');
+      var val  = btn.getAttribute('data-val');
+      ST[tipo] = val;
+      var all = document.querySelectorAll('[data-tipo="' + tipo + '"]');
+      for (var i = 0; i < all.length; i++) all[i].classList.remove('sel');
+      btn.classList.add('sel');
+      calc();
+    }
+
+    var btns = document.querySelectorAll('.obtn[data-tipo]');
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].addEventListener('touchend', handleBtn, { passive: false });
+      btns[i].addEventListener('click', handleBtn);
+    }
+
+    document.getElementById('tslider').addEventListener('input', function() {
+      ST.tamano = parseInt(this.value);
+      document.getElementById('tlabel').textContent = TAMANOS[ST.tamano].label;
+      calc();
+    });
+
+    document.getElementById('btn-reset').addEventListener('touchend', function(e) { e.preventDefault(); resetCalc(); });
+    document.getElementById('btn-reset').addEventListener('click', resetCalc);
+    document.getElementById('btn-copiar').addEventListener('touchend', function(e) { e.preventDefault(); copiar(); });
+    document.getElementById('btn-copiar').addEventListener('click', copiar);
+
+    function calc() {
+      if (!ST.estilo || !ST.zona || !ST.complejidad) return;
+      var t  = TAMANOS[ST.tamano];
+      var em = ESTILO_M[ST.estilo];
+      var zm = ZONA_M[ST.zona];
+      var cm = COMP_M[ST.complejidad];
+
+      document.getElementById('res-wrap').style.display = 'block';
+
+      if (t.sesiones === 0) {
+        var precio = Math.min(t.base * em * zm * cm, 300);
+        var min = Math.round(precio * 0.9 / 5) * 5;
+        var max = Math.round(Math.min(precio * 1.12, 300) / 5) * 5;
+        var mid = Math.round(precio / 5) * 5;
+        document.getElementById('res-pieza').style.display = 'block';
+        document.getElementById('res-sesiones').style.display = 'none';
+        document.getElementById('precio-out').textContent = mid + ' €';
+        document.getElementById('precio-sub').textContent = 'Rango orientativo: ' + min + ' € – ' + max + ' €';
+        document.getElementById('pills-pieza').innerHTML = pills([EST_N[ST.estilo], ZONA_N[ST.zona], t.label, COMP_N[ST.complejidad]]);
+      } else {
+        var nSes = t.sesiones;
+        if (ST.complejidad === 'alta')    nSes = Math.round(nSes * 1.3);
+        if (ST.complejidad === 'extrema') nSes = Math.round(nSes * 1.6);
+        if (ST.estilo === 'realismo')     nSes = Math.round(nSes * 1.2);
+        if (ST.estilo === 'dotwork')      nSes = Math.round(nSes * 1.15);
+        if (ST.zona === 'espalda' || ST.zona === 'cuello') nSes = Math.round(nSes * 1.1);
+        nSes = Math.max(nSes, t.sesiones);
+        var minS = Math.max(t.sesiones, nSes - 1);
+        var maxS = nSes + 1;
+        document.getElementById('res-pieza').style.display = 'none';
+        document.getElementById('res-sesiones').style.display = 'block';
+        document.getElementById('sesiones-out').textContent = nSes + ' sesiones aprox.';
+        document.getElementById('sesiones-sub').textContent = 'Rango: ' + minS + '–' + maxS + ' sesiones · 250 € / sesión';
+        document.getElementById('sesiones-info').innerHTML =
+          '<strong style="font-size:13px;color:#1a1a1a">Inversión total estimada: ' + (minS*250) + ' € – ' + (maxS*250) + ' €</strong><br>' +
+          'Cada sesión dura 3–4 horas. El número exacto se define tras ver el diseño.';
+        document.getElementById('pills-sesiones').innerHTML = pills([EST_N[ST.estilo], ZONA_N[ST.zona], t.label, COMP_N[ST.complejidad]]);
+      }
+    }
+
+    function pills(arr) {
+      return arr.map(function(f) { return '<span class="pill">' + f + '</span>'; }).join('');
+    }
+
+    function resetCalc() {
+      ST.estilo = null; ST.zona = null; ST.tamano = 2; ST.complejidad = null;
+      var all = document.querySelectorAll('.obtn[data-tipo]');
+      for (var i = 0; i < all.length; i++) all[i].classList.remove('sel');
+      document.getElementById('tslider').value = 2;
+      document.getElementById('tlabel').textContent = TAMANOS[2].label;
+      document.getElementById('res-wrap').style.display = 'none';
+      document.getElementById('notas').value = '';
+    }
+
+    function copiar() {
+      if (!ST.estilo || !ST.zona || !ST.complejidad) { alert('Completa todos los campos primero'); return; }
+      var t = TAMANOS[ST.tamano];
+      var txt = '--- Presupuesto orientativo ---\n';
+      txt += 'Estilo: ' + EST_N[ST.estilo] + '\n';
+      txt += 'Zona: ' + ZONA_N[ST.zona] + '\n';
+      txt += 'Tamaño: ' + t.label + '\n';
+      txt += 'Complejidad: ' + COMP_N[ST.complejidad] + '\n';
+      if (t.sesiones === 0) {
+        txt += 'Precio estimado: ' + document.getElementById('precio-out').textContent + '\n';
+        txt += document.getElementById('precio-sub').textContent + '\n';
+      } else {
+        txt += document.getElementById('sesiones-out').textContent + '\n';
+        txt += document.getElementById('sesiones-sub').textContent + '\n';
+        var strong = document.getElementById('sesiones-info').querySelector('strong');
+        if (strong) txt += strong.textContent + '\n';
+      }
+      var notas = document.getElementById('notas').value.trim();
+      if (notas) txt += 'Notas: ' + notas + '\n';
+      txt += '* Sujeto a confirmación tras ver el diseño.';
+      navigator.clipboard.writeText(txt).then(function() {
+        var ok = document.getElementById('ok-msg');
+        ok.style.display = 'block';
+        setTimeout(function() { ok.style.display = 'none'; }, 2500);
+      });
+    }
+  </script>
+</body>
+</html>
